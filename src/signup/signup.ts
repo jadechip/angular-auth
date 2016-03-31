@@ -3,6 +3,7 @@ import { Router, RouterLink } from 'angular2/router';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
 import { Http } from 'angular2/http';
 import { contentHeaders } from '../common/headers';
+import { domainUrl } from '../common/domainUrl';
 
 let styles   = require('./signup.css');
 let template = require('./signup.html');
@@ -22,7 +23,7 @@ export class Signup {
   signup(event, username, password) {
     event.preventDefault();
     let body = JSON.stringify({ username, password });
-    this.http.post('http://localhost:3001/users', body, { headers: contentHeaders })
+    this.http.post(domainUrl + '/api/auth', body, { headers: contentHeaders })
       .subscribe(
         response => {
           localStorage.setItem('jwt', response.json().id_token);

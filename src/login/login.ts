@@ -3,6 +3,7 @@ import { Router, RouterLink } from 'angular2/router';
 import { CORE_DIRECTIVES, FORM_DIRECTIVES } from 'angular2/common';
 import { Http, Headers } from 'angular2/http';
 import { contentHeaders } from '../common/headers';
+import { domainUrl } from '../common/domainUrl';
 
 let styles   = require('./login.css');
 let template = require('./login.html');
@@ -21,11 +22,14 @@ export class Login {
 
   login(event, username, password) {
     event.preventDefault();
-    let body = JSON.stringify({ username, password });
-    this.http.post('http://localhost:3001/sessions/create', body, { headers: contentHeaders })
+    let payload = JSON.stringify({ username, password });
+    console.log(payload);
+    this.http.post(domainUrl + '/api/auth', payload, { headers: contentHeaders })
       .subscribe(
         response => {
-          localStorage.setItem('jwt', response.json().id_token);
+          console.log('auth token is this', response.json()['auth-token']);
+          localStorage.setItem('auth-token', response.json()['auth-token']);
+          // $http.defaults.headers.common.Authorization = response.json()['auth-token'];
           this.router.parent.navigateByUrl('/home');
         },
         error => {

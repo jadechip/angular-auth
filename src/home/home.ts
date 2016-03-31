@@ -2,7 +2,9 @@ import { Component, View } from 'angular2/core';
 import { CORE_DIRECTIVES } from 'angular2/common';
 import { Http, Headers } from 'angular2/http';
 import { AuthHttp } from 'angular2-jwt';
+// import { Socket } from 'phoenix-elixir';
 import { Router } from 'angular2/router';
+import { domainUrl } from '../common/domainUrl';
 
 let styles = require('./home.css');
 let template = require('./home.html');
@@ -21,23 +23,45 @@ export class Home {
   decodedJwt: string;
   response: string;
   api: string;
+  metrics: object;
 
   constructor(public router: Router, public http: Http, public authHttp: AuthHttp) {
-    this.jwt = localStorage.getItem('jwt');
-    this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
+    this.jwt = localStorage.getItem('auth-token');
+    // http.defaults.headers.common.Authorization = this.jwt;
+    // this.decodedJwt = this.jwt && window.jwt_decode(this.jwt);
   }
 
   logout() {
-    localStorage.removeItem('jwt');
+    localStorage.removeItem('auth-token');
     this.router.parent.navigateByUrl('/login');
   }
 
+
   callAnonymousApi() {
-    this._callApi('Anonymous', 'http://localhost:3001/api/random-quote');
+    // this._callApi('Anonymous', 'http://localhost:3001/api/random-quote');
+    if (this.jwt) {
+      var authHeader = new Headers();
+      authHeader.append('auth-token', this.jwt);
+    } else {
+      return;
+    }
+
+    this.http.get(domainUrl + '/api/metrics', {
+      headers: authHeader
+    }).map(res => res.json()).subscribe(
+      data => this.metrics = data,
+      err => this.logError(err),
+      () => console.log(this.metrics)
+    );
   }
 
   callSecuredApi() {
     this._callApi('Secured', 'http://localhost:3001/api/protected/random-quote');
+  }
+
+
+  logError(err) {
+    console.error('There was an error: ' + err);
   }
 
   _callApi(type, url) {

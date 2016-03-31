@@ -14,7 +14,7 @@ export class LoggedInRouterOutlet extends RouterOutlet {
     super(_elementRef, _loader, _parentRouter, nameAttr);
 
     this.parentRouter = _parentRouter;
-    // The Boolean following each route below denotes whether the route requires authentication to view
+    // TDenotes whether the route requires authentication to view
     this.publicRoutes = {
       'login': true,
       'signup': true
@@ -23,7 +23,7 @@ export class LoggedInRouterOutlet extends RouterOutlet {
 
   activate(instruction: ComponentInstruction) {
     let url = instruction.urlPath;
-    if (!this.publicRoutes[url] && !localStorage.getItem('jwt')) {
+    if (!this.publicRoutes[url] && !localStorage.getItem('auth-token')) {
       // todo: redirect to Login, may be there a better way?
       this.parentRouter.navigateByUrl('/login');
     }
