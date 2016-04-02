@@ -31,6 +31,7 @@
     "es6-shim": "^0.33.13",
     "es7-reflect-metadata": "^1.6.0",
     "jwt-decode": "^1.5.1",
+    "phoenix-elixir": "^1.2.0-dev",
     "rxjs": "5.0.0-beta.2",
     "zone.js": "0.5.15"
   },

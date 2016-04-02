@@ -2,9 +2,10 @@ import { Component, View } from 'angular2/core';
 import { CORE_DIRECTIVES } from 'angular2/common';
 import { Http, Headers } from 'angular2/http';
 import { AuthHttp } from 'angular2-jwt';
-// import { Socket } from 'phoenix-elixir';
 import { Router } from 'angular2/router';
 import { domainUrl } from '../common/domainUrl';
+import { Socket } from 'phoenix-elixir';
+
 
 let styles = require('./home.css');
 let template = require('./home.html');
@@ -56,7 +57,23 @@ export class Home {
   }
 
   callSecuredApi() {
-    this._callApi('Secured', 'http://localhost:3001/api/protected/random-quote');
+    // this._callApi('Secured', 'http://localhost:3001/api/protected/random-quote');
+
+    let socket = new Socket("ws://frontend-test.aircloak.com/updates", { params: { "auth-token": this.jwt } })
+    socket.connect()
+
+    console.log(socket);
+
+    let channel = socket.channel("updates:new", {})
+    channel.join()
+      .receive("ok", resp => { console.log("Joined successfully", resp) })
+      .receive("error", resp => { console.log("Unable to join", resp) })
+
+    channel.on("update", payload => {
+      console.log("Received: " + payload);
+      console.log(payload);
+    })
+
   }
 
 
